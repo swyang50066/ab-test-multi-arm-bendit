@@ -1,24 +1,24 @@
 import numpy as np
 
 
-class EpsilionGreedy(object):
+class EpsilonGreedy(object):
     """Epsilon-Greedy Strategy"""
     def __init__(self, epsilon):
         self.epsilon = epsilon
 
-    def select_action(self, action):
+    def select_action(self, agent):
         if np.random.random() < self.epsilon:
             return np.random.choice(len(agent.num_arm))
         else:
             action = np.argmax(agent.value_estimates)
 
-            optimal_actions = np.where(
-                agent.value_estimates = agent.value_estimates[action]
-            )[0]
-            if len(optimal_actions) == 1:
-                return action
-            else:
-                return np.random.choice(optimal_actions)
+        optimal_actions = np.where(
+            agent.value_estimates == agent.value_estimates[action]
+        )[0]
+        if len(optimal_actions) == 1:
+            return action
+        else:
+            return np.random.choice(optimal_actions)
 
 
 class UpperConfidenceBound(object):
@@ -26,7 +26,7 @@ class UpperConfidenceBound(object):
     def __init__(self, const):
         self.const = const
 
-    def select_action(self, action):
+    def select_action(self, agent):
         exploration = np.log(agent.trial+1) / agent.action_counts
         exploration[np.isnan(exploration)] = 0
         exploration = np.power(exploration, 1/self.const)
@@ -41,9 +41,9 @@ class UpperConfidenceBound(object):
             return np.random.choice(optimal_actions)
 
 
-class SoftmaxPolicy(object):
+class Softmax(object):
     """Softmax Perference Strategy"""
-    def select_action(self, action):
+    def select_action(self, agent):
         a = agent.value_estimates
         pi = np.exp(a) / np.sum(np.exp(a))
         cdf = np.cumsum(pi)

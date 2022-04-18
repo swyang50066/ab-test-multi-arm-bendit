@@ -84,7 +84,7 @@ class GradientAgent(Agent):
 
         pi = (
             np.exp(self.value_estimates) 
-            / np.sum(np.exp(self.value_estimates)
+            / np.sum(np.exp(self.value_estimates))
         )
 
         ht = self.value_estimates[last_action]

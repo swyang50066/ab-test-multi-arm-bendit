@@ -79,7 +79,7 @@ class GaussianBandit(MultiArmedBanditWrapper):
         ), selection == self.get_optimal_action
         
 
-class BinormialBandit(MultiArmedBanditWrapper):
+class BinomialBandit(MultiArmedBanditWrapper):
     """Bandit with Binomial reward distribution"""
     def __init__(self, num_arm, num_trial, num_sample, probs=None):
         super(BinomialBandit, self).__init__(num_arm=num_arm)
@@ -103,8 +103,8 @@ class BinormialBandit(MultiArmedBanditWrapper):
         
         if self.num_sample is not None:
             self._samples = np.random.binomial(
-                n=self.num_trial*np.ones(self.num_arm, dtype=np.int)
-                p=self.action_values
+                n=self.num_trial*np.ones(self.num_arm, dtype=np.int),
+                p=self.action_values,
                 size=(self.num_sample, self.num_arm)
             )
 
@@ -116,8 +116,8 @@ class BinormialBandit(MultiArmedBanditWrapper):
     def sample(self):
         if self._samples is None:
             return np.random.binomial(
-                n=self.num_trial*np.ones(self.num_arm, dtype=np.int)
-                p=self.action_values
+                n=self.num_trial*np.ones(self.num_arm, dtype=np.int),
+                p=self.action_values,
                 size=(1, self.num_arm)
             )
         else:
