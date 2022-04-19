@@ -11,7 +11,6 @@ class Agent(object):
         self.num_arm = num_arm
         self.prior = prior
         self.gamma = gamma
-        self.num_arm = bandit.num_arm
         
         # Value spaces
         self.value_estimates = prior*np.ones(self.num_arm)
@@ -126,9 +125,9 @@ class BetaAgent(Agent):
         self.alphas[last_action] += reward
         self.betas[last_action] += self.num_trial - reward
 
-        if b_use_thompson_sampling:
+        if self.b_use_thompson_sampling:
             self.value_estimates = np.random.beta(
-                a=self.alphas, b=self.betas, size=(1, self.num_arm)
+                a=self.alphas, b=self.betas, size=(self.num_arm,)
             )
         else:
             self.value_estimates = self.alphas / (self.alphas + self.betas)

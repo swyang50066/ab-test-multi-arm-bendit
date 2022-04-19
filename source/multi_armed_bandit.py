@@ -87,7 +87,8 @@ class BinomialBandit(MultiArmedBanditWrapper):
         # Paramters
         self.num_trial = num_trial
         self.num_sample = num_sample
-        
+        self.probs = probs 
+       
         self._samples = None
         self._cursor = -1
 
