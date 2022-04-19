@@ -8,7 +8,7 @@ class EpsilonGreedy(object):
 
     def select_action(self, agent):
         if np.random.random() < self.epsilon:
-            return np.random.choice(len(agent.num_arm))
+            return np.random.choice(agent.num_arm)
         else:
             action = np.argmax(agent.value_estimates)
 
@@ -44,9 +44,11 @@ class UpperConfidenceBound(object):
 class Softmax(object):
     """Softmax Perference Strategy"""
     def select_action(self, agent):
-        a = agent.value_estimates
-        pi = np.exp(a) / np.sum(np.exp(a))
-        cdf = np.cumsum(pi)
-        s = np.random.random()
+        pi = (
+            np.exp(agent.value_estimates) 
+            / np.sum(np.exp(agent.value_estimates))
+        )
         
-        return np.where(s < cdf)[0][0]
+        return np.where(
+            np.random.random() < np.cumsum(pi)
+        )[0][0]
