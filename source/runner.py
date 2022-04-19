@@ -13,9 +13,12 @@ def runner(
     # Set numpy random seed
     np.random.seed(random_seed)
     
-    # Declare outputs
-    scores = np.zeros((num_iter, len(agents)))
-    optimals = np.zeros_like(scores)
+    # Declare result container
+    results = {
+        "value_estimates": np.zeros((len(agents), bandit.num_arm)),
+        "scores": np.zeros((num_iter, len(agents))),
+        "optimals": np.zeros((num_iter, len(agents)))
+    }
 
     # Run simulation
     for n in range(num_experiment):
@@ -39,12 +42,15 @@ def runner(
                 agent.observe(reward)
 
                 # Store results
-                scores[step, index] += reward
+                results["scores"][step, index] += reward
                 if b_optimal_action:
-                    optimals[step, index] += 1
+                    results["optimals"][step, index] += 1
 
-    # Return outputs
-    scores /= num_experiment
-    optimals /= num_experiment
+            results["value_estimates"][index, :] += agent.value_estimates
 
-    return scores, optimals
+    # Average results
+    results["value_estimates"] /= num_experiment
+    results["scores"] /= num_experiment
+    results["optimals"] /= num_experiment
+
+    return results 
