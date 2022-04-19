@@ -53,7 +53,7 @@ class DeterministicBandit(MultiArmedBanditWrapper):
 
 class GaussianBandit(MultiArmedBanditWrapper):
     """Bandit with Gaussian reward distribution"""
-    def __init__(self, mean_reward=0, stddev_reward=1):
+    def __init__(self, num_arm, mean_reward=0, stddev_reward=1):
         super(GaussianBandit, self).__init__(num_arm=num_arm)
 
         # Parameters
@@ -88,9 +88,6 @@ class BinomialBandit(MultiArmedBanditWrapper):
         self.num_trial = num_trial
         self.num_sample = num_sample
         self.probs = probs 
-       
-        self._samples = None
-        self._cursor = -1
 
         # Set up bandit state
         self.setup()
@@ -108,6 +105,8 @@ class BinomialBandit(MultiArmedBanditWrapper):
                 p=self.action_values,
                 size=(self.num_sample, self.num_arm)
             )
+        
+        self._cursor = -1
 
     def pull_arm(self, selection):
         """Return reward pulling the selected bandit arm"""

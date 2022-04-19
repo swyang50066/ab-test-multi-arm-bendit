@@ -6,11 +6,14 @@ class EpsilonGreedy(object):
     def __init__(self, epsilon):
         self.epsilon = epsilon
 
+    def __str__(self):
+        return "Epsilon-Greedy"
+
     def select_action(self, agent):
         if np.random.random() < self.epsilon:
             return np.random.choice(agent.num_arm)
-        else:
-            action = np.argmax(agent.value_estimates)
+        
+        action = np.argmax(agent.value_estimates)
 
         optimal_actions = np.where(
             agent.value_estimates == agent.value_estimates[action]
@@ -26,10 +29,14 @@ class UpperConfidenceBound(object):
     def __init__(self, const):
         self.const = const
 
+    def __str__(self):
+        return "Upper Confidence Bound(UCB)"
+
     def select_action(self, agent):
         exploration = np.log(agent.trial+1) / agent.action_counts
         exploration[np.isnan(exploration)] = 0
         exploration = np.power(exploration, 1/self.const)
+        #exploration = self.const*np.sqrt(exploration)
 
         q = agent.value_estimates + exploration
         
@@ -43,6 +50,12 @@ class UpperConfidenceBound(object):
 
 class Softmax(object):
     """Softmax Perference Strategy"""
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return "Softmax"
+
     def select_action(self, agent):
         pi = (
             np.exp(agent.value_estimates) 
