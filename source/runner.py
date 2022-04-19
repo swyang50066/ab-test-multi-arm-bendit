@@ -1,28 +1,50 @@
+from tqdm import tqdm
+
 import numpy as np
 
     
-def runner(bandit, agents, num_iter=100, num_experiment=1):
+def runner(
+    bandit, 
+    agents, 
+    num_iter=1000, 
+    num_experiment=500, 
+    random_seed=931016
+):
+    # Set numpy random seed
+    np.random.seed(random_seed)
     
+    # Declare outputs
     scores = np.zeros((num_iter, len(agents)))
-    optimal = np.zeros_like(scores)
+    optimals = np.zeros_like(scores)
 
-    for _ in range(num_experiment):
-        for step in range(num_iter):
-            for index, agent in enumerate(agents):
+    # Run simulation
+    for n in range(num_experiment):
+        print("Experiment: ", n)
+        
+        # Set up environment
+        bandit.setup()
+
+        for index, agent in enumerate(agents):
+            # Reset agent
+            agent.reset()
+
+            for step in tqdm(range(num_iter), desc="iterations"):
+                # Select action under policy
                 action = agent.select_action()
                 
-                reward, is_optimal = bandit.pull_arm(action)
+                # Pull bandit 
+                reward, b_optimal_action = bandit.pull_arm(action)
                 
+                # Update agent
                 agent.observe(reward)
 
+                # Store results
                 scores[step, index] += reward
-                if is_optimal:
-                    optimal[step, index] += 1
+                if b_optimal_action:
+                    optimals[step, index] += 1
 
-                print(
-                    "step", step, 
-                    "index", index,
-                    "reward",  reward
-                )
+    # Return outputs
+    scores /= num_experiment
+    optimals /= num_experiment
 
-    return scores / num_experiment, optimal / num_experiment
+    return scores, optimals

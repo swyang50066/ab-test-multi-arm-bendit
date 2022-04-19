@@ -13,14 +13,17 @@ class Agent(object):
         self.gamma = gamma
         
         # Value spaces
-        self.value_estimates = prior*np.ones(self.num_arm)
-        self.action_counts = np.zeros(self.num_arm, dtype=np.uint)
+        self.value_estimates = self.prior*np.ones(self.num_arm)
+        self.action_counts = np.zeros(self.num_arm, dtype=np.int16)
 
         # Histories
         self.action_history = list()
         self.regret_history = list()
 
         self.trial = 0
+
+    def __str__(self):
+        return "Normal Agent"
 
     def select_action(self):
         """Select action under policy"""
@@ -36,16 +39,18 @@ class Agent(object):
         last_action = self.action_history[-1]
         
         if self.gamma is None:
-            self.gamma = float(1 / self.action_counts[last_action])
+            gamma = float(1 / self.action_counts[last_action])
+        else:
+            gamma = self.gamma
 
-        self.value_estimates[self.action_history[-1]] += (
-            self.gamma*(reward - self.value_estimates[last_action])
+        self.value_estimates[last_action] += (
+            gamma*(reward - self.value_estimates[last_action])
         )
 
     def reset(self):
         """Reset memory"""
-        self.value_estiamtes = prior*np.ones(self.num_arm)
-        self.action_counts = np.zeros(self.num_action, dtype=np.uint8)
+        self.value_estimates = self.prior*np.ones(self.num_arm)
+        self.action_counts = np.zeros(self.num_arm, dtype=np.int16)
 
         # Histories
         self.action_history = list()
@@ -73,6 +78,10 @@ class GradientAgent(Agent):
         self.b_use_baseline = b_use_baseline
         self.averaged_reward = 0
 
+    def __str__(self):
+        return "Gradient Agent"
+
+
     def observe(self, reward):
         """Observe environment"""
         last_action = self.action_history[-1]
@@ -88,10 +97,10 @@ class GradientAgent(Agent):
 
         ht = self.value_estimates[last_action]
         ht += (
-            self.alpha*(reward - self.average_reward)*(1 - pi[last_action])
+            self.alpha*(reward - self.averaged_reward)*(1 - pi[last_action])
         )
         
-        self.value_estimates -= self.alpha*(reward - self.average_reward)*pi
+        self.value_estimates -= self.alpha*(reward - self.averaged_reward)*pi
         self.value_estimates[last_action] = ht
 
     def reset(self):
@@ -117,6 +126,9 @@ class BetaAgent(Agent):
         self.b_use_thompson_sampling = b_use_thompson_sampling
         self.alphas = np.ones((self.num_arm,))
         self.betas = np.ones((self.num_arm,))
+
+    def __str__(self):
+        return "Beta Agent"
 
     def observe(self, reward):
         """Observe enrivonment"""
