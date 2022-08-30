@@ -73,11 +73,14 @@ class GaussianBandit(MultiArmedBanditWrapper):
 
     def pull_arm(self, selection):
         """Return reward pulling the selected bandit arm"""
-        return np.random.normal(
-            loc=self.action_values[selection], 
-            scale=self.stddev_reward
-        ), selection == self.get_optimal_action
-        
+        return (
+            np.random.normal(
+                loc=self.action_values[selection], 
+                scale=self.stddev_reward
+            ), 
+            selection == self.get_optimal_action
+        )
+
 
 class BinomialBandit(MultiArmedBanditWrapper):
     """Bandit with Binomial reward distribution"""
